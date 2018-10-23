@@ -96,10 +96,12 @@ def extract_lifetimes(turnover_data, N_neuron,  with_starters):
                         deathtimes.extend(life_death[1::2])
 
                     elif c_sort[0,0] == 0:
+                        #print(c_sort)
                         life_death = np.diff(c_sort[:,1])
                         if with_starters:
-                            life_death = np.concatenate(([c_sort[0,1]]),
-                                                        life_death)
+                            #print(([c_sort[0,1]]),life_death)
+                            life_death = np.concatenate(([c_sort[0,1]],
+                                                        life_death))
                             lifetimes.extend(life_death[::2])
                             deathtimes.extend(life_death[1::2])
                         else:

@@ -1,6 +1,6 @@
 
 from decimal import Decimal
-from brian2.units import mV, ms, second
+from brian2.units import mV, ms, second, Hz
 
 def netw_params_display(ax, bpath, nsp):
 
@@ -46,7 +46,7 @@ def netw_params_display(ax, bpath, nsp):
             transform = ax.transAxes)
 
     
-    text = 'T=%.2f s' %(nsp['T']/second)
+    text = '$T_1 = ' '%.2f s' %(nsp['T1']/second) + '$'
 
 
     ax.text(0., 0.215, text,
@@ -109,11 +109,7 @@ def neuron_params_display(ax, bpath, nsp):
             transform = ax.transAxes)
 
     
-    text = '$\sigma_e$=$\sqrt{\mathrm{' +\
-           '%.2E' % Decimal((nsp['sigma_e']/mV)**2)+'}}$ mV' +\
-           ', $\, \sigma_i$=$\sqrt{\mathrm{' +\
-           '%.2E' % Decimal((nsp['sigma_i']/mV)**2)+'}}$ mV' +\
-           '\n $V^T_{e}$=\SI{%.2f}{mV}' % (nsp['Vt_e']/mV) +\
+    text = '$V^T_{e}$=\SI{%.2f}{mV}' % (nsp['Vt_e']/mV) +\
            ', $V^T_{i}$=\SI{%.2f}{mV}' % (nsp['Vt_i']/mV) +\
            '\n $V^r_{e}$=\SI{%.0f}{mV}' % (nsp['Vr_e']/mV) +\
            ', $V^r_{i}$=\SI{%.0f}{mV}' % (nsp['Vr_i']/mV) 
@@ -275,4 +271,37 @@ def strct_params_display(ax, bpath, nsp):
             transform = ax.transAxes)
         
 
+def poisson_input_params_display(ax, bpath, nsp):    
     
+    ax.axis('off')
+
+    text = r'\textbf{Poisson input parameters}'
+
+    ax.text(0., 1.0, text,
+            horizontalalignment='left',
+            verticalalignment='top',
+            linespacing = 1.95,
+            fontsize=13,
+            bbox={'boxstyle': 'square, pad=0.3', 'facecolor':'white',
+                  'alpha':1, 'edgecolor':'none'},
+            transform = ax.transAxes)
+
+
+    text = '$N_{\mathrm{poisson}} = %d$' %(int(nsp['NPInp'])) +\
+           '\n'+r'$\mathrm{rate} = \text{\SI{'+'%.3f}{Hz}}$' \
+              %(nsp['PInp_rate']/Hz) #+\
+           # '\n$a_{\mathrm{epoi} = %f$' %(nsp['a_EPoi']) +\
+           # '\n$a_{\mathrm{ipoi} = %f$' %(nsp['a_IPoi']) +\
+           # '\n$p_{\mathrm{epoi} = %f$' %(nsp['p_EPoi']) +\
+           # '\n$p_{\mathrm{ipoi} = %f$' %(nsp['p_IPoi'])
+
+    
+    ax.text(0., 0.85, text,
+            horizontalalignment='left',
+            verticalalignment='top',
+            linespacing = 1.95,
+            fontsize=12,
+            bbox={'boxstyle': 'square, pad=0.3', 'facecolor':'white',
+                  'alpha':1, 'edgecolor':'none'},
+            transform = ax.transAxes)
+        

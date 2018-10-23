@@ -17,6 +17,9 @@ def n_active_synapses(ax, bpath, nsp):
         # trace 1: data from synEE_a (~11 data points)
         active_at_t = np.sum(synee_a['syn_active'], axis=1)
 
+        print(active_at_t)
+        print(synee_a['t'])
+
         all_at_t = np.shape(synee_a['syn_active'])[1]
         assert all_at_t == nsp['N_e']*(nsp['N_e']-1)
 

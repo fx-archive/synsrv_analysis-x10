@@ -6,7 +6,7 @@ import matplotlib.pyplot as pl
 import numpy as np
 from brian2.units import mV, ms, second
 
-import pickle
+import pickle, powerlaw
 
 from methods.process_turnover import extract_lifetimes, \
                                      extract_active_synapse_count, \
@@ -63,7 +63,8 @@ def lifetime_distribution_loglog(ax, bpath, nsp, bins,
 
 def lifetime_distribution_loglog_linear_bins(ax, bpath, nsp, bin_w,
                                              discard_t, with_starters,
-                                             label_key = '', n_color=0):
+                                             label_key = '', n_color=0,
+                                             fit=False, density=False):
     ''' 
     discard all values until discard_t
     '''
@@ -82,8 +83,13 @@ def lifetime_distribution_loglog_linear_bins(ax, bpath, nsp, bin_w,
         _lt, _dt = extract_lifetimes(turnover, nsp['N_e'], with_starters)
         life_t, death_t = _lt*second, _dt*second
 
+        T = nsp['T1']+nsp['T2']+nsp['T3']
+        print('Using T1+T2+T3 as T!!')
+
         counts, edges = np.histogram(life_t/ms,
-                                     bins=np.arange(nsp['dt']/ms,nsp['T']/ms, bin_w/ms))
+                                     bins=np.arange(nsp['dt']/ms,T/ms,
+                                                    bin_w/ms),
+                                     density=density)
         centers = (edges[:-1] + edges[1:])/2.
 
         label = ''
@@ -92,10 +98,53 @@ def lifetime_distribution_loglog_linear_bins(ax, bpath, nsp, bin_w,
                     r'} = \text{'+'%.2E' %(Decimal(getattr(tr, label_key))) +\
                     r'}$'
 
-        print('assuming fixed number of lines, n_color=5!')
-
         ax.plot(centers, counts, '.', markersize=2., label=label)#,
                 #color=pl.cm.Greens(np.linspace(0.2,1,5)[n_color]))
+
+        if fit and len(life_t)>25:
+            fit = powerlaw.Fit(life_t/ms, discrete=True)
+
+            fit.plot_pdf(ax=ax, color='r')
+            fit.power_law.plot_pdf(ax=ax,  color='r', linestyle='--')
+
+            alpha = fit.power_law.alpha
+
+            ax.text(0.65, 0.95, r'$\alpha = '+'%.4f' %(alpha) +'$',
+                        horizontalalignment='left',
+                        verticalalignment='top',
+                        linespacing = 1.95,
+                        fontsize=10,
+                        color='r',
+                        bbox={'boxstyle': 'square, pad=0.3',
+                              'facecolor':'white', 'alpha':1,
+                              'edgecolor':'none'},
+                        transform = ax.transAxes,
+                        clip_on=False)
+
+        if with_starters:
+            ax.text(0.05, 0.1, 'with starters',
+                    horizontalalignment='left',
+                    verticalalignment='top',
+                    linespacing = 1.95,
+                    fontsize=10,
+                    color='green',
+                    bbox={'boxstyle': 'square, pad=0.3',
+                          'facecolor':'white', 'alpha':1,
+                          'edgecolor':'none'},
+                    transform = ax.transAxes,
+                    clip_on=False)
+        else:
+            ax.text(0.05, 0.1, 'without starters',
+                    horizontalalignment='left',
+                    verticalalignment='top',
+                    linespacing = 1.95,
+                    fontsize=10,
+                    color='red',
+                    bbox={'boxstyle': 'square, pad=0.3',
+                          'facecolor':'white', 'alpha':1,
+                          'edgecolor':'none'},
+                    transform = ax.transAxes,
+                    clip_on=False)
         
             
     ax.set_xscale('log')
@@ -103,10 +152,58 @@ def lifetime_distribution_loglog_linear_bins(ax, bpath, nsp, bin_w,
     ax.set_title('synapse lifetimes (' + \
                  r'$\text{bin width} = \text{\SI{%d}{ms}}$)' % (int(bin_w/ms)))
     ax.set_xlabel('synapse lifetime [ms]')
-    ax.set_ylabel('absolute occurrence')
+
+    if density:
+        ax.set_ylabel('probability density')
+    else:
+        ax.set_ylabel('absolute occurrence')
             
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
     ax.yaxis.set_ticks_position('left')
     ax.xaxis.set_ticks_position('bottom')
             
+
+
+
+def lifetime_distribution_loglog_add_fit(axs, bpath, nsp, discard_t,
+                                         with_starters):
+    ''' 
+    discard all values until discard_t
+    '''
+    if discard_t!=0.:
+        raise NotImplementedError
+    else:
+        print("not discarding any ts")
+
+
+    with open(bpath+'/raw/turnover.p', 'rb') as pfile:
+        turnover = pickle.load(pfile)
+
+
+    if not len(turnover) == 0:
+    
+        _lt, _dt = extract_lifetimes(turnover, nsp['N_e'], with_starters)
+        life_t, death_t = _lt*second, _dt*second
+
+        if len(life_t)>25:
+                                         
+            fit = powerlaw.Fit(life_t/ms, discrete=True)
+            alpha = fit.power_law.alpha
+
+            for ax in axs:
+                fit.plot_pdf(ax=ax, color='r')
+                fit.power_law.plot_pdf(ax=ax,  color='r', linestyle='--')
+                                         
+                ax.text(0.65, 0.95, r'$\alpha = '+'%.4f' %(alpha) +'$',
+                        horizontalalignment='left',
+                        verticalalignment='top',
+                        linespacing = 1.95,
+                        fontsize=10,
+                        color='r',
+                        bbox={'boxstyle': 'square, pad=0.3',
+                              'facecolor':'white', 'alpha':1,
+                              'edgecolor':'none'},
+                        transform = ax.transAxes,
+                        clip_on=False)
+
