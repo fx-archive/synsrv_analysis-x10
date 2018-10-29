@@ -1,7 +1,10 @@
 
+from brian2.units import second
+
 import numpy as np
 
-def extract_lifetimes(turnover_data, N_neuron,  with_starters):
+def extract_lifetimes(turnover_data, N_neuron, initial,
+                      t_cut = 0.*second):
     '''
     turnover data is assumed to be a numpy.array with 
     lines consisting of the four entries
@@ -14,11 +17,30 @@ def extract_lifetimes(turnover_data, N_neuron,  with_starters):
       -- t         :: simulation time point in seconds(!)
       -- i         :: pre-synaptic neuron index
       -- j         :: post-synaptic neuron index
+
+    -----------
+
+    parameters:
+     
+     -- turnover_data  :: 
+     -- N_neuron       ::
+     -- initial        :: determines handling of initially at 
+                          t_cut present synapsese
+
+                          - "only" :: returns lifetimes only 
+                              for synapses present at t_cut
+                          - "with" :: return lifetimes of 
+                              synapses present at t_cut and 
+                              those generated after t_cut
+                          - "without" :: return lifetimes of
+                              synapses generated after t_cut      
       
-    returns the collected
-     -- lifetimes  :: duration from generation until pruning,
-                      i.e. synapse generated but not yet 
-                      pruned at simulation end are not included!
+    returns: 
+
+     -- lifetimes  :: duration from generation (or initial presence) 
+                      until pruning. Synapses generated (initally 
+                      present) but not yet pruned at simulation end 
+                      are NOT INCLUDED
      -- deathtimes :: like lifetimes, but from death to generation,
                       i.e. time from begining of simulation until 
                       first generation is not included 
@@ -41,6 +63,9 @@ def extract_lifetimes(turnover_data, N_neuron,  with_starters):
     #        [1.  , 9.28, 0.  , 2.  ],
     #        [1.  , 1.89, 0.  , 3.  ]])
 
+    
+    turnover_data = turnover_data[turnover_data[:,1]>= t_cut/second]
+    turnover_data[:,1] = turnover_data[:,1]-t_cut/second
 
     ind = np.lexsort((turnover_data[:,3],turnover_data[:,2]))
     df_sorted = turnover_data[ind]
@@ -82,8 +107,11 @@ def extract_lifetimes(turnover_data, N_neuron,  with_starters):
                     # synapses started at beginning of simulation,
                     # died during the simulation and did not grow
                     # again
-                    if with_starters and c_sort[0,0]==0:
+                    if initial=='only' and c_sort[0,0]==0:
                         lifetimes.extend([c_sort[0,1]])
+                    elif initial=='with' and c_sort[0,0]==0:
+                        lifetimes.extend([c_sort[0,1]])
+                        
                 elif len(c_sort) > 1:
    
                     if c_sort[0,0] == 1:
@@ -92,19 +120,22 @@ def extract_lifetimes(turnover_data, N_neuron,  with_starters):
                         life_death = np.diff(c_sort[:,1])
 
                         # finally add the data
-                        lifetimes.extend(life_death[::2])
-                        deathtimes.extend(life_death[1::2])
+                        if not initial=='only':
+                            lifetimes.extend(life_death[::2])
+                            deathtimes.extend(life_death[1::2])
 
                     elif c_sort[0,0] == 0:
                         #print(c_sort)
                         life_death = np.diff(c_sort[:,1])
-                        if with_starters:
+                        if initial=='with':
                             #print(([c_sort[0,1]]),life_death)
                             life_death = np.concatenate(([c_sort[0,1]],
                                                         life_death))
                             lifetimes.extend(life_death[::2])
                             deathtimes.extend(life_death[1::2])
-                        else:
+                        elif initial=='only':
+                            lifetimes.extend([c_sort[0,1]])
+                        elif initial=='without':
                             lifetimes.extend(life_death[1::2])
                             deathtimes.extend(life_death[::2])
                             
