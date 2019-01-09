@@ -81,23 +81,27 @@ def ge_plot(ax, bpath, nsp, tmin, tmax, i=0):
     with open(bpath+'/raw/gexc_stat.p', 'rb') as pfile:
         GExc_stat = pickle.load(pfile)
 
-    ge_data=GExc_stat['ge']
+    try:
+        ge_data=GExc_stat['ge']
 
-    indx = np.logical_and(GExc_stat['t']>tmin, GExc_stat['t']<tmax)
+        indx = np.logical_and(GExc_stat['t']>tmin, GExc_stat['t']<tmax)
 
-    # for i in range(np.shape(ge_data)[1]):
-    ax.plot(GExc_stat['t'][indx]/second, ge_data[:,i][indx], color='blue')
-        
-    #ax.set_xlim(tmin/second, tmax/second)
-    ax.set_xlabel('time [s]')
+        # for i in range(np.shape(ge_data)[1]):
+        ax.plot(GExc_stat['t'][indx]/second, ge_data[:,i][indx], color='blue')
 
-    #ax.set_ylim(0, nsp['N_e'] + nsp['N_i'])
-    # ax.set_title('T='+str(T/second)+' s')
+        #ax.set_xlim(tmin/second, tmax/second)
+        ax.set_xlabel('time [s]')
 
-    ax.spines['right'].set_visible(False)
-    ax.spines['top'].set_visible(False)
-    ax.yaxis.set_ticks_position('left')
-    ax.xaxis.set_ticks_position('bottom')
+        #ax.set_ylim(0, nsp['N_e'] + nsp['N_i'])
+        # ax.set_title('T='+str(T/second)+' s')
+
+        ax.spines['right'].set_visible(False)
+        ax.spines['top'].set_visible(False)
+        ax.yaxis.set_ticks_position('left')
+        ax.xaxis.set_ticks_position('bottom')
+
+    except KeyError:
+        ax.axis('off')
 
     
 def gi_plot(ax, bpath, nsp, tmin, tmax, i=0):
@@ -105,25 +109,29 @@ def gi_plot(ax, bpath, nsp, tmin, tmax, i=0):
     with open(bpath+'/raw/gexc_stat.p', 'rb') as pfile:
         GExc_stat = pickle.load(pfile)
 
-    gi_data=GExc_stat['gi']
+    try:
+        gi_data=GExc_stat['gi']
 
-    indx = np.logical_and(GExc_stat['t']>tmin, GExc_stat['t']<tmax)
+        indx = np.logical_and(GExc_stat['t']>tmin, GExc_stat['t']<tmax)
 
-    # for i in range(np.shape(gi_data)[1]):
-    #     ax.plot(GExc_stat['t'][indx]/second, gi_data[:,i][indx])
+        # for i in range(np.shape(gi_data)[1]):
+        #     ax.plot(GExc_stat['t'][indx]/second, gi_data[:,i][indx])
 
-    ax.plot(GExc_stat['t'][indx]/second, gi_data[:,i][indx], color='red')
+        ax.plot(GExc_stat['t'][indx]/second, gi_data[:,i][indx], color='red')
+
+        #ax.set_xlim(tmin/second, tmax/second)
+        ax.set_xlabel('time [s]')
+
+        #ax.set_ylim(0, nsp['N_e'] + nsp['N_i'])
+        # ax.set_title('T='+str(T/second)+' s')
+
+        ax.spines['right'].set_visible(False)
+        ax.spines['top'].set_visible(False)
+        ax.yaxis.set_ticks_position('left')
+        ax.xaxis.set_ticks_position('bottom')
         
-    #ax.set_xlim(tmin/second, tmax/second)
-    ax.set_xlabel('time [s]')
-
-    #ax.set_ylim(0, nsp['N_e'] + nsp['N_i'])
-    # ax.set_title('T='+str(T/second)+' s')
-
-    ax.spines['right'].set_visible(False)
-    ax.spines['top'].set_visible(False)
-    ax.yaxis.set_ticks_position('left')
-    ax.xaxis.set_ticks_position('bottom')    
+    except KeyError:
+        ax.axis('off')
 
 
 
@@ -132,24 +140,28 @@ def voltage_traces(ax, bpath, nsp, tmin, tmax):
     with open(bpath+'/raw/gexc_stat.p', 'rb') as pfile:
         GExc_stat = pickle.load(pfile)
 
-    if len(GExc_stat['V']) == 0:
-        pass
-    
-    else:
-
-        indx = np.logical_and(GExc_stat['t']>tmin, GExc_stat['t']<tmax)
-
-        for i in range(len(GExc_stat['V'].T)):
-            ax.plot(GExc_stat['t'][indx]/second, GExc_stat['V'][:,i][indx]/mV)
-
-        ax.set_ylim(nsp['Vr_e']/mV-1.5, nsp['Vt_e']/mV+1.5)
-        ax.set_title('Membrane Voltage Traces')
-        ax.set_xlabel('time [s]')
-        ax.set_ylabel('voltage [mV]')
-
-        ax.spines['right'].set_visible(False)
-        ax.spines['top'].set_visible(False)
-        ax.yaxis.set_ticks_position('left')
-        ax.xaxis.set_ticks_position('bottom')
+    try:
         
-    
+        if len(GExc_stat['V']) == 0:
+            pass
+
+        else:
+
+            indx = np.logical_and(GExc_stat['t']>tmin, GExc_stat['t']<tmax)
+
+            for i in range(len(GExc_stat['V'].T)):
+                ax.plot(GExc_stat['t'][indx]/second, GExc_stat['V'][:,i][indx]/mV)
+
+            ax.set_ylim(nsp['Vr_e']/mV-1.5, nsp['Vt_e']/mV+1.5)
+            ax.set_title('Membrane Voltage Traces')
+            ax.set_xlabel('time [s]')
+            ax.set_ylabel('voltage [mV]')
+
+            ax.spines['right'].set_visible(False)
+            ax.spines['top'].set_visible(False)
+            ax.yaxis.set_ticks_position('left')
+            ax.xaxis.set_ticks_position('bottom')
+
+
+    except KeyError:
+        ax.axis('off')
