@@ -289,7 +289,11 @@ def poisson_input_params_display(ax, bpath, nsp):
 
     text = '$N_{\mathrm{poisson}} = %d$' %(int(nsp['NPInp'])) +\
            '\n'+r'$\mathrm{rate} = \text{\SI{'+'%.3f}{Hz}}$' \
-              %(nsp['PInp_rate']/Hz) #+\
+              %(nsp['PInp_rate']/Hz) +\
+           '\n' +'$N_{\mathrm{poisson}} = %d$' %(int(nsp['NPInp_inh'])) +\
+           '\n'+r'$\mathrm{rate} = \text{\SI{'+'%.3f}{Hz}}$' \
+              %(nsp['PInp_inh_rate']/Hz) 
+              
            # '\n$a_{\mathrm{epoi} = %f$' %(nsp['a_EPoi']) +\
            # '\n$a_{\mathrm{ipoi} = %f$' %(nsp['a_IPoi']) +\
            # '\n$p_{\mathrm{epoi} = %f$' %(nsp['p_EPoi']) +\

@@ -40,7 +40,7 @@ def n_active_synapses(ax, bpath, nsp):
 
 
     
-def synapse_weights_linear(ax, bpath, nsp, tstep, bins, cutoff):
+def synapse_weights_linear(ax, bpath, nsp, tstep, bins, cutoff, label='', fit=False):
 
     with open(bpath+'/raw/synee_a.p', 'rb') as pfile:
         synee_a = pickle.load(pfile)
@@ -56,7 +56,18 @@ def synapse_weights_linear(ax, bpath, nsp, tstep, bins, cutoff):
 
     print(fraction_of_cutoff)
 
-    ax.hist(active_weight_at_t_cutoff, bins=bins)
+    if fit:
+        ax.hist(active_weight_at_t_cutoff, bins=bins, label=label, density=True)
+    else:
+        ax.hist(active_weight_at_t_cutoff, bins=bins, label=label)
+        
+    if fit:
+        fs, floc, fscale = lognorm.fit(active_weight_at_t_cutoff, floc=0)
+        f_rv = lognorm(fs, loc=0, scale=fscale)
+        xs = np.logspace(start=np.log10(np.min(active_weight_at_t_cutoff)),
+                         stop=np.log10(np.max(active_weight_at_t_cutoff)),
+                         base=10., num=5000)
+        ax.plot(xs, f_rv.pdf(xs), 'r')
     
     ax.set_title('E'+r'$\to$'+'E weights at t=\SI{'+ \
                  str(synee_a['t'][tstep]/second)+'}{s}')
@@ -70,7 +81,7 @@ def synapse_weights_linear(ax, bpath, nsp, tstep, bins, cutoff):
 
 
 
-def synapse_weights_log(ax, bpath, nsp, tstep, bins, cutoff, fit=True):
+def synapse_weights_log(ax, bpath, nsp, tstep, bins, cutoff, label='', fit=True):
 
     with open(bpath+'/raw/synee_a.p', 'rb') as pfile:
         synee_a = pickle.load(pfile)
@@ -84,11 +95,11 @@ def synapse_weights_log(ax, bpath, nsp, tstep, bins, cutoff, fit=True):
 
     fraction_of_cutoff = len(active_weight_at_t_cutoff)/len(active_weight_at_t)    
 
-    log_weights = np.log(active_weight_at_t_cutoff)
+    log_weights = np.log10(active_weight_at_t_cutoff)
 
     if len(log_weights)>0:
 
-        ax.hist(log_weights, bins=bins, density=True)
+        ax.hist(log_weights, bins=bins, density=True, label=label)
 
         if fit:
             floc, fscale = norm.fit(log_weights)
@@ -103,7 +114,7 @@ def synapse_weights_log(ax, bpath, nsp, tstep, bins, cutoff, fit=True):
     ax.set_title('E'+r'$\to$'+'E weights at t=\SI{'+ \
                  str(synee_a['t'][tstep]/second)+'}{s}')
         
-    ax.set_xlabel('log of synaptic weight')
+    ax.set_xlabel('log10 of synaptic weight')
 
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)

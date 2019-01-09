@@ -1,6 +1,6 @@
 
 from brian2.units import second
-
+import time
 import numpy as np
 
 def extract_survival(turnover_data, bin_w, N_neuron, t_split,
@@ -67,25 +67,32 @@ def extract_survival(turnover_data, bin_w, N_neuron, t_split,
                               bin_w/second)
     survival_counts = np.zeros_like(survival_times)
     survival_times = survival_times*second
-    
+
+    a = time.time()
     turnover_data = turnover_data[turnover_data[:,1]>= t_cut/second]
     turnover_data[:,1] = turnover_data[:,1]-t_cut/second
+    b = time.time()
+    print('cutting took %.2f seconds' %(b-a))
 
     # turnover_data = turnover_data[turnover_data[:,1]<= t_split/second]
     
-
+    a = time.time()
     ind = np.lexsort((turnover_data[:,3],turnover_data[:,2]))
     df_sorted = turnover_data[ind]
-
+    b = time.time()
+    print('lexsort took %.2f seconds' %(b-a))
+    
     current_synapse = []
     prev_s_id = 0.
     empty_array_count = 0
 
+    a = time.time()
     for syn_rec in df_sorted:
         
         s_id = syn_rec[2] * N_neuron + syn_rec[3]
         
         if not prev_s_id==s_id:
+            print('current s_id: %d' %s_id)
 
             if current_synapse==[]:
                 # this can happen only when synapse 0,0 has no event
@@ -148,8 +155,6 @@ def extract_survival(turnover_data, bin_w, N_neuron, t_split,
                                 survival_counts += np.ones_like(survival_counts)
                             else:
                                 c_sort_appendix = c_sort[len(c_sort_cut),:]
-                                print(c_sort_cut[0,0])
-                                print(c_sort_appendix)
                                 assert c_sort_appendix[0]==0
                                 c_sort_cut = np.vstack((c_sort_cut,
                                                         c_sort_appendix))
@@ -173,6 +178,9 @@ def extract_survival(turnover_data, bin_w, N_neuron, t_split,
         current_synapse.append(list(syn_rec))
         prev_s_id = s_id
 
+
+    b = time.time()
+    print('main loop took %.2f seconds' %(b-a))
     return survival_times, survival_counts
 
 

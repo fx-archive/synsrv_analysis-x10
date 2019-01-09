@@ -30,6 +30,9 @@ def survival_probabilities_linear(ax, bpath, nsp, bin_w,
                                              t_split,
                                              t_cut = t_cut)
 
+        if density:
+            s_counts = s_counts/s_counts[0]
+
         ax.plot(s_times/second, s_counts, '.', markersize=2., label=label)
 
         
@@ -37,12 +40,13 @@ def survival_probabilities_linear(ax, bpath, nsp, bin_w,
     # ax.set_yscale('log')
     # ax.set_title('synapse lifetimes (' + \
     #              r'$\text{bin width} = \text{\SI{%d}{s}}$)' % (int(bin_w/second)))
-    # ax.set_xlabel('synapse lifetime [s]')
+
+    ax.set_xlabel('time since synapse growth [s]')
 
     if density:
-        ax.set_ylabel('probability density')
+        ax.set_ylabel('survival probability')
     else:
-        ax.set_ylabel('absolute occurrence')
+        ax.set_ylabel('number of suriving synapses')
             
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
