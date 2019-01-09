@@ -130,33 +130,27 @@ def synapse_weight_traces(ax, bpath, nsp, tmin, tmax, ylim_top=-1,
     with open(bpath+'/raw/synee_stat.p', 'rb') as pfile:
         synee_stat = pickle.load(pfile)
 
-    for i in range(np.shape(synee_stat['a'])[1]):
-        indx = np.logical_and(synee_stat['t'] > tmin,
-                              synee_stat['t'] < tmax)
-        ax.plot(synee_stat['t'][indx],synee_stat['a'][:,i][indx], color='grey')
+    try:
+        for i in range(np.shape(synee_stat['a'])[1]):
+            indx = np.logical_and(synee_stat['t'] > tmin,
+                                  synee_stat['t'] < tmax)
+            ax.plot(synee_stat['t'][indx],synee_stat['a'][:,i][indx],
+                    color='grey')
+
+        if ylim_top>0:
+            ax.set_ylim(0,ylim_top)
+
+        ax.set_title('Synaptic Weight Traces')
+        ax.set_xlabel('time [s]')
+
+        ax.spines['right'].set_visible(False)
+        ax.spines['top'].set_visible(False)
+        ax.yaxis.set_ticks_position('left')
+        ax.xaxis.set_ticks_position('bottom')
+    
+
+    except KeyError:
+        ax.axis('off')
 
 
-    # ax.text(0.47, 0.95,
-    # 'ascale='+'%.2E' % Decimal(tr.ascale),
-    # horizontalalignment='left',
-    # verticalalignment='top',
-    # bbox={'boxstyle': 'square, pad=0.3', 'facecolor':'white',
-    #       'alpha':1, 'edgecolor':'none'},
-    # transform = ax.transAxes)
-
-    # if plot_thresholds:
-    #     ax.axhline(tr.a_insert, linestyle='dashed', color='grey')
-    #     ax.axhline(tr.prn_thrshld, linestyle='dashed', color='grey')
-    #     ax.axhline(tr.amax, color='red')
-
-    if ylim_top>0:
-        ax.set_ylim(0,ylim_top)
-
-    ax.set_title('Synaptic Weight Traces')
-    ax.set_xlabel('time [s]')
-
-    ax.spines['right'].set_visible(False)
-    ax.spines['top'].set_visible(False)
-    ax.yaxis.set_ticks_position('left')
-    ax.xaxis.set_ticks_position('bottom')
     
