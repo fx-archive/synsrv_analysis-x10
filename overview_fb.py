@@ -61,12 +61,16 @@ def overview_figure(bpath, nsp):
                           ylim_top=0.001)
 
 
-    ge_plot(axs['4,1'], bpath, nsp, tmin=tmin1, tmax=tmax1)
-    ge_plot(axs['4,2'], bpath, nsp, tmin=tmin3, tmax=tmax3)
+    ge_plot(axs['4,1'], bpath, nsp, tmin=tmin1, tmax=tmax1, i=0)
+    gi_plot(axs['4,1'], bpath, nsp, tmin=tmin1, tmax=tmax1, i=0)
+
+    ge_plot(axs['4,2'], bpath, nsp, tmin=tmin3, tmax=tmax3, i=1)
+    gi_plot(axs['4,2'], bpath, nsp, tmin=tmin3, tmax=tmax3, i=1)
 
     voltage_traces(axs['5,1'], bpath, nsp, tmin=tmin1, tmax=tmax1)
     voltage_traces(axs['5,2'], bpath, nsp, tmin=tmin3, tmax=tmax3)
 
+    
 
 
     # raster_plot_poisson(axs['6,1'], bpath, nsp, tmin=tmin1, tmax=tmax1)
@@ -112,7 +116,7 @@ if __name__ == "__main__":
             with open(bpath+'/raw/namespace.p', 'rb') as pfile:
                 nsp=pickle.load(pfile)
 
-            network_activity_figure(bpath, nsp)
+            overview_figure(bpath, nsp)
 
         except FileNotFoundError:
             print(bpath[-4:], "reports: No namespace data. Skipping.")

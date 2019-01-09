@@ -76,7 +76,7 @@ def raster_plot_poisson(ax, bpath, nsp, tmin, tmax):
     
 
     
-def ge_plot(ax, bpath, nsp, tmin, tmax):
+def ge_plot(ax, bpath, nsp, tmin, tmax, i=0):
 
     with open(bpath+'/raw/gexc_stat.p', 'rb') as pfile:
         GExc_stat = pickle.load(pfile)
@@ -85,8 +85,34 @@ def ge_plot(ax, bpath, nsp, tmin, tmax):
 
     indx = np.logical_and(GExc_stat['t']>tmin, GExc_stat['t']<tmax)
 
-    for i in range(np.shape(ge_data)[1]):
-        ax.plot(GExc_stat['t'][indx]/second, ge_data[:,i][indx])
+    # for i in range(np.shape(ge_data)[1]):
+    ax.plot(GExc_stat['t'][indx]/second, ge_data[:,i][indx], color='blue')
+        
+    #ax.set_xlim(tmin/second, tmax/second)
+    ax.set_xlabel('time [s]')
+
+    #ax.set_ylim(0, nsp['N_e'] + nsp['N_i'])
+    # ax.set_title('T='+str(T/second)+' s')
+
+    ax.spines['right'].set_visible(False)
+    ax.spines['top'].set_visible(False)
+    ax.yaxis.set_ticks_position('left')
+    ax.xaxis.set_ticks_position('bottom')
+
+    
+def gi_plot(ax, bpath, nsp, tmin, tmax, i=0):
+
+    with open(bpath+'/raw/gexc_stat.p', 'rb') as pfile:
+        GExc_stat = pickle.load(pfile)
+
+    gi_data=GExc_stat['gi']
+
+    indx = np.logical_and(GExc_stat['t']>tmin, GExc_stat['t']<tmax)
+
+    # for i in range(np.shape(gi_data)[1]):
+    #     ax.plot(GExc_stat['t'][indx]/second, gi_data[:,i][indx])
+
+    ax.plot(GExc_stat['t'][indx]/second, gi_data[:,i][indx], color='red')
         
     #ax.set_xlim(tmin/second, tmax/second)
     ax.set_xlabel('time [s]')
@@ -98,6 +124,7 @@ def ge_plot(ax, bpath, nsp, tmin, tmax):
     ax.spines['top'].set_visible(False)
     ax.yaxis.set_ticks_position('left')
     ax.xaxis.set_ticks_position('bottom')    
+
 
 
 def voltage_traces(ax, bpath, nsp, tmin, tmax):
