@@ -25,31 +25,20 @@ def extract_survival(turnover_data, bin_w, N_neuron, t_split,
      
      -- turnover_data  :: 
      -- N_neuron       ::
-     -- initial        :: determines handling of initially at 
-                          t_cut present synapsese
+     -- t_split        :: 
 
-                          - "only" :: returns lifetimes only 
-                              for synapses present at t_cut
-                          - "with" :: return lifetimes of 
-                              synapses present at t_cut and 
-                              those generated after t_cut
-                          - "without" :: return lifetimes of
-                              synapses generated after t_cut      
-      
+                          
     returns: 
 
-     -- lifetimes  :: duration from generation (or initial presence) 
-                      until pruning. Synapses generated (initally 
-                      present) but not yet pruned at simulation end 
-                      are NOT INCLUDED
-     -- deathtimes :: like lifetimes, but from death to generation,
-                      i.e. time from begining of simulation until 
-                      first generation is not included 
+     # -- lifetimes  :: duration from generation (or initial presence) 
+     #                  until pruning. Synapses generated (initally 
+     #                  present) but not yet pruned at simulation end 
+     #                  are NOT INCLUDED
+     # -- deathtimes :: like lifetimes, but from death to generation,
+     #                  i.e. time from begining of simulation until 
+     #                  first generation is not included 
     '''
 
-    # lexsort by pre- and post-synaptic indices
-    # Example:
-    #
     # array([[  1.,   0.,   2., 347.],
     #        [  1.,   0.,   3., 248.],
     #        [  1.,   0.,   4., 145.],
@@ -71,7 +60,6 @@ def extract_survival(turnover_data, bin_w, N_neuron, t_split,
     print('cutting took %.2f seconds' %(b-a))
 
 
-
     df = pd.DataFrame(data=turnover_data, columns=['struct', 't', 'i', 'j'])
 
     df = df.astype({'struct': 'int64', 'i': 'int64', 'j': 'int64'})
@@ -80,7 +68,7 @@ def extract_survival(turnover_data, bin_w, N_neuron, t_split,
 
     df = df.sort_values(['s_id', 't'])
 
-    excluded_ids = 0
+    excluded_ids = []
     
     for s_id, gdf in df.groupby('s_id'):
 
@@ -104,7 +92,7 @@ def extract_survival(turnover_data, bin_w, N_neuron, t_split,
             tar = np.abs(np.diff(gdf['struct']))
 
             if np.sum(tar)!=len(tar):
-                exclude_ids.append(s_id)
+                excluded_ids.append(s_id)
 
             else:
 
@@ -117,31 +105,30 @@ def extract_survival(turnover_data, bin_w, N_neuron, t_split,
                     # add maximal survival time t_split
                     full_t.append(t_split)
 
-                elif len(gdf) > 1:
-                    pass
-                    # # normalizes the times to the growth event
-                    # c_sort[:,1] = c_sort[:,1]-c_sort[0,1]
+                elif len(gdf)>1 and gdf['t'].iloc[0]<=t_split:
 
-                    # # filter out events after window t_split
-                    # c_sort_cut = c_sort[c_sort[:,1]<=t_split/second]
+                    # only if first growth event is before t_split
+                    # otherwise not enough time to potentially
+                    # long surviving synapses
+                  
+                    # normalize to the times of the first growth event
+                    # gdf['t'] = gdf['t']-gdf['t'].iloc[0]
 
-                    # if len(c_sort_cut) % 2 == 0:
-                    #     # ends on pruning event
-                    #     lts = np.diff(c_sort_cut[:,1])
-                    #     assert np.max(lts)<=t_split/second
+                    # filter out events after window t_split
+                    gdf = gdf[gdf['t'] <= t_split+gdf['t'].iloc[0]]
 
-                    #     for lt in lts:
-                    #         # look up lt in survival_bins
-                    #         # and add survival counts
-                    #         added_counts = np.zeros_like(survival_counts)
-                    #         # print(added_counts)
-                    #         # print(added_counts[survival_times/second<lt])
-                    #         added_counts[survival_times/second<lt]=1
+                    # starts with growth and ends on pruning event
+                    if len(gdf) % 2 == 0:
 
-                    #         survival_counts += added_counts
+                        srv_t = np.diff(gdf['t'])
+                        assert np.max(srv_t)<=t_split
 
-                    # elif len(c_sort_cut) % 2 == 1:
-                    #     # ends on growth event find next death event
+                        full_t.extend(list(srv_t)[::2])
+
+                    # ends on growth event, need to find next pruning event
+                    elif len(gdf) % 2 == 1:
+                        raise NotYetImplementedError
+
                     #     if len(c_sort_cut) == len(c_sort):
                     #         # can't find any, add maximal survival
                     #         survival_counts += np.ones_like(survival_counts)
@@ -157,20 +144,20 @@ def extract_survival(turnover_data, bin_w, N_neuron, t_split,
                     #         #     assert c_sort_appendix[0]==0
                     #         #     sys.exit()
 
-                    #         c_sort_cut = np.vstack((c_sort_cut,
-                    #                                 c_sort_appendix))
+                    # #         c_sort_cut = np.vstack((c_sort_cut,
+                    # #                                 c_sort_appendix))
 
-                    #         assert len(c_sort_cut) % 2 ==0
+                    # #         assert len(c_sort_cut) % 2 ==0
 
-                    #         lts = np.diff(c_sort_cut[:,1])
+                    # #         lts = np.diff(c_sort_cut[:,1])
 
-                    #         for lt in lts:
-                    #             # look up lt in survival_bins
-                    #             # and add survival counts
-                    #             added_counts = np.zeros_like(survival_counts)
-                    #             added_counts[survival_times/second<lt]=1
+                    # #         for lt in lts:
+                    # #             # look up lt in survival_bins
+                    # #             # and add survival counts
+                    # #             added_counts = np.zeros_like(survival_counts)
+                    # #             added_counts[survival_times/second<lt]=1
 
-                    #             survival_counts += added_counts
+                    # #             survival_counts += added_counts
 
 
 # -------------------------------------------------                            
