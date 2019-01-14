@@ -1,6 +1,6 @@
 
 from brian2.units import second
-import time
+import sys, time
 import numpy as np
 
 def extract_survival(turnover_data, bin_w, N_neuron, t_split,
@@ -86,13 +86,15 @@ def extract_survival(turnover_data, bin_w, N_neuron, t_split,
     prev_s_id = 0.
     empty_array_count = 0
 
+    exclude_count = 0
+
     a = time.time()
     for syn_rec in df_sorted:
         
         s_id = syn_rec[2] * N_neuron + syn_rec[3]
         
-        if not prev_s_id==s_id:
-            print('current s_id: %d' %s_id)
+        if not prev_s_id==s_id and s_id < 300:
+            # print('current s_id: %d' %s_id)
 
             if current_synapse==[]:
                 # this can happen only when synapse 0,0 has no event
@@ -113,63 +115,79 @@ def extract_survival(turnover_data, bin_w, N_neuron, t_split,
                         survival_counts += np.ones_like(survival_counts)
                         
                 elif len(c_sort) > 1:
-                    
-                    if c_sort[0,0] == 0:
-                        # dies first get rid of first event
-                        c_sort = c_sort[1:,:]
 
-                    if len(c_sort)==1 and c_sort[0,1]<=t_split/second:
-                        # synapses started but did not die with sim tim
-                        # add maximal survival
-                        survival_counts += np.ones_like(survival_counts)
+                    tar = np.abs(np.diff(c_sort[:,0]))
+
+                    if np.sum(tar)==len(tar):
+                                            
+                        if c_sort[0,0] == 0:
+                            # dies first get rid of first event
+                            c_sort = c_sort[1:,:]
+
+                        if len(c_sort)==1 and c_sort[0,1]<=t_split/second:
+                            # synapses started but did not die with sim tim
+                            # add maximal survival
+                            survival_counts += np.ones_like(survival_counts)
 
 
-                    elif len(c_sort) > 1:
+                        elif len(c_sort) > 1:
 
 
-                        # normalizes the times to the growth event
-                        c_sort[:,1] = c_sort[:,1]-c_sort[0,1]
+                            # normalizes the times to the growth event
+                            c_sort[:,1] = c_sort[:,1]-c_sort[0,1]
 
-                        # filter out events after window t_split
-                        c_sort_cut = c_sort[c_sort[:,1]<=t_split/second]
+                            # filter out events after window t_split
+                            c_sort_cut = c_sort[c_sort[:,1]<=t_split/second]
 
-                        if len(c_sort_cut) % 2 == 0:
-                            # ends on pruning event
-                            lts = np.diff(c_sort_cut[:,1])
-                            assert np.max(lts)<=t_split/second
-                            
-                            for lt in lts:
-                                # look up lt in survival_bins
-                                # and add survival counts
-                                added_counts = np.zeros_like(survival_counts)
-                                # print(added_counts)
-                                # print(added_counts[survival_times/second<lt])
-                                added_counts[survival_times/second<lt]=1
-
-                                survival_counts += added_counts
-
-                        elif len(c_sort_cut) % 2 == 1:
-                            # ends on growth event find next death event
-                            if len(c_sort_cut) == len(c_sort):
-                                # can't find any, add maximal survival
-                                survival_counts += np.ones_like(survival_counts)
-                            else:
-                                c_sort_appendix = c_sort[len(c_sort_cut),:]
-                                assert c_sort_appendix[0]==0
-                                c_sort_cut = np.vstack((c_sort_cut,
-                                                        c_sort_appendix))
-
-                                assert len(c_sort_cut) % 2 ==0
-
+                            if len(c_sort_cut) % 2 == 0:
+                                # ends on pruning event
                                 lts = np.diff(c_sort_cut[:,1])
-                            
+                                assert np.max(lts)<=t_split/second
+
                                 for lt in lts:
                                     # look up lt in survival_bins
                                     # and add survival counts
                                     added_counts = np.zeros_like(survival_counts)
+                                    # print(added_counts)
+                                    # print(added_counts[survival_times/second<lt])
                                     added_counts[survival_times/second<lt]=1
 
                                     survival_counts += added_counts
+
+                            elif len(c_sort_cut) % 2 == 1:
+                                # ends on growth event find next death event
+                                if len(c_sort_cut) == len(c_sort):
+                                    # can't find any, add maximal survival
+                                    survival_counts += np.ones_like(survival_counts)
+                                else:
+                                    c_sort_appendix = c_sort[len(c_sort_cut),:]
+                                    # try:
+                                    #     assert c_sort_appendix[0]==0
+                                    # except AssertionError:
+                                    #     print("c_sort: ", c_sort)
+                                    #     print("c_sort_cut: ", c_sort_cut)
+                                    #     print("c_sort_appendix: ", c_sort_appendix)
+                                    #     assert False
+                                    #     assert c_sort_appendix[0]==0
+                                    #     sys.exit()
+
+                                    c_sort_cut = np.vstack((c_sort_cut,
+                                                            c_sort_appendix))
+
+                                    assert len(c_sort_cut) % 2 ==0
+
+                                    lts = np.diff(c_sort_cut[:,1])
+
+                                    for lt in lts:
+                                        # look up lt in survival_bins
+                                        # and add survival counts
+                                        added_counts = np.zeros_like(survival_counts)
+                                        added_counts[survival_times/second<lt]=1
+
+                                        survival_counts += added_counts
+                        else:
+                            print('\n' +'c_sort: ', c_sort)
+                            exclude_count += 1
 
                                     
                             
@@ -181,6 +199,9 @@ def extract_survival(turnover_data, bin_w, N_neuron, t_split,
 
     b = time.time()
     print('main loop took %.2f seconds' %(b-a))
+
+    print('Excluded: ', exclude_count)
+    
     return survival_times, survival_counts
 
 

@@ -6,18 +6,6 @@ from brian2.units import mV, ms, second
 from .methods.process_survival import extract_survival
 
 
-def add_survival(ax, bin_w, bpath, nsp, t_split, t_cut):
-
-    label = str(int(nsp['T2']/second)) + ' s'
-
-    survival_probabilities_linear(ax, bpath, nsp,
-                                  bin_w=bin_w,
-                                  t_split=t_split,
-                                  t_cut=t_cut,
-                                  density=True,
-                                  label=label)
-    
-
     
 if __name__ == "__main__":
 
@@ -36,64 +24,36 @@ if __name__ == "__main__":
         try:
             
             print('Found ', bpath)
-            # if bpath=='builds/0000':
-                
-            #     with open(bpath+'/raw/namespace.p', 'rb') as pfile:
-            #         nsp=pickle.load(pfile)
 
-            #     t_split = 49500*second
-            #     t_cut = 1005*second
+            with open(bpath+'/raw/namespace.p', 'rb') as pfile:
+                nsp=pickle.load(pfile)
 
-            #     print('started loading data')
-            #     a = time.time()
-            #     with open(bpath+'/raw/turnover.p', 'rb') as pfile:
-            #         turnover = pickle.load(pfile)
-            #     b=time.time()
-            #     print('finished loading data, took %.2f seconds' %(b-a))
+            t_cut = 20*second
+            t_split = (nsp['T2']-t_cut)/2.
 
-            #     a=time.time()
-            #     print('\n started survival extractation')
-            #     s_times, s_counts = extract_survival(turnover, bin_w,
-            #                                          nsp['N_e'],
-            #                                          t_split,
-            #                                          t_cut = t_cut)
-            #     b = time.time()
-            #     print('finished survival extraction, took %.2f seconds' %(b-a))
 
-            #     with open(bpath+'/raw/survival.p', 'wb') as pfile:
-            #         out = {'t_split': t_split, 't_cut': t_cut,
-            #                's_times': s_times, 's_counts': s_counts}
-            #         pickle.dump(out, pfile)
-                    
+            print('started loading data')
+            a = time.time()
+            with open(bpath+'/raw/turnover.p', 'rb') as pfile:
+                turnover = pickle.load(pfile)
+            b=time.time()
+            print('finished loading data, took %.2f seconds' %(b-a))
 
-            if bpath=='builds/0009':
-                
-                with open(bpath+'/raw/namespace.p', 'rb') as pfile:
-                    nsp=pickle.load(pfile)
+            a=time.time()
+            print('\n started survival extractation')
+            s_times, s_counts = extract_survival(turnover, bin_w,
+                                                 nsp['N_e'],
+                                                 t_split=t_split,
+                                                 t_cut=t_cut)
 
-                t_split = 49500*second
-                t_cut = 1005*second
+            
+            b = time.time()
+            print('finished survival extraction, took %.2f seconds' %(b-a))
 
-                print('started loading data')
-                a = time.time()
-                with open(bpath+'/raw/turnover.p', 'rb') as pfile:
-                    turnover = pickle.load(pfile)
-                b=time.time()
-                print('finished loading data, took %.2f seconds' %(b-a))
-
-                a=time.time()
-                print('\n started survival extractation')
-                s_times, s_counts = extract_survival(turnover, bin_w,
-                                                     nsp['N_e'],
-                                                     t_split,
-                                                     t_cut = t_cut)
-                b = time.time()
-                print('finished survival extraction, took %.2f seconds' %(b-a))
-
-                with open(bpath+'/raw/survival.p', 'wb') as pfile:
-                    out = {'t_split': t_split, 't_cut': t_cut,
-                           's_times': s_times, 's_counts': s_counts}
-                    pickle.dump(out, pfile)
+            with open(bpath+'/raw/survival.p', 'wb') as pfile:
+                out = {'t_split': t_split, 't_cut': t_cut,
+                       's_times': s_times, 's_counts': s_counts}
+                pickle.dump(out, pfile)
                     
 
 
