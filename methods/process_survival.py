@@ -80,19 +80,15 @@ def extract_survival(turnover_data, bin_w, N_neuron, t_split,
 
     df = df.sort_values(['s_id', 't'])
 
-    exclude_ids = 0
+    excluded_ids = 0
     
     for s_id, gdf in df.groupby('s_id'):
-    
-        c_array = np.array(current_synapse)
-        ind = np.argsort(c_array[:,1])
-        c_sort = c_array[ind]
 
-        elif len(gdf) == 1:
+        if len(gdf) == 1:
             if gdf['struct'].iloc[0]==1 and gdf['t'].iloc[0]<=t_split:
                 # synapses started but did not die with sim tim
                 # add maximal survival time t_split
-                full_T.append(t_split)
+                full_t.append(t_split)
             else:
                 # the cases are:
                 #  -- synapse was present at beginning and died
@@ -119,7 +115,7 @@ def extract_survival(turnover_data, bin_w, N_neuron, t_split,
                 if len(gdf)==1 and gdf['t'].iloc[0]<=t_split:
                     # synapses started but did not die with sim tim
                     # add maximal survival time t_split
-                    full_T.append(t_split)
+                    full_t.append(t_split)
 
                 elif len(gdf) > 1:
                     pass

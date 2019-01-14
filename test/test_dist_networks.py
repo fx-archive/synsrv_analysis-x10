@@ -1,16 +1,44 @@
 
-import unittest, os
+import unittest, os, time
+from brian2.units import second
 import numpy as np
 
 # get tested
 from methods.process_survival import  extract_survival
 
 
-# class Test_connect_dist_network(unittest.TestCase):
+class Test_extract_survival(unittest.TestCase):
 
-#     g = gt.Graph()
-#     N = 100
-#     ed_l = 100.
+
+
+    def test_turnover_data_set1(self):
+        t_split, t_cut, bin_w = 5*second, 2*second, 1*second
+        turnover_data = [[1, 2.5, 0, 0]]
+
+        full_t, ex_ids = extract_survival(np.array(turnover_data),
+                                          bin_w, 10,
+                                          t_split, t_cut)
+
+        self.assertEqual(len(full_t),1)
+        self.assertEqual(full_t[0],t_split/second)
+
+        
+    def test_turnover_data_speed(self):
+        t_split, t_cut, bin_w = 4*second, 2*second, 1*second
+        turnover_data = np.genfromtxt('test/test_sets/turnover_test_set1',
+                                      delimiter=',')
+
+        a = time.time()
+        full_t, ex_ids = extract_survival(turnover_data,
+                                          bin_w, 1000,
+                                          t_split, t_cut)
+        b = time.time()
+
+        print('Test Set 1 took :', b-a, ' s')
+        
+        # self.assertEqual(len(full_t),1)
+        # self.assertEqual(full_t[0],t_split/second)
+        
     
 #     positions = distribute_neurons_randomly(N, ed_l)     
 #     xy = g.new_vertex_property("vector<double>")
@@ -32,73 +60,6 @@ from methods.process_survival import  extract_survival
 #         self.g.clear_edges()
 
 
-# class Test_generate_dist_network(unittest.TestCase):
-
-#     N, ed_l, w = 1000, 100, 12.6
-#     dist_profile = Aniso_netw_dist_profile(w)
-#     spath = 'data/tmp_N1000_dist.gt'
-
-#     g = generate_dist_network(N, dist_profile.C, ed_l,
-#                               save_path = spath)
-
-
-#     def test_number_of_vertices(self):
-#         self.assertEqual(self.N, self.g.num_vertices())
-
-#     # graph properties
-#     def test_graph_property_graph_type(self):
-#         self.assertEqual(self.g.graph_properties["graph_type"],
-#                          "dist_depend")
-        
-#     def test_graph_property_edge_length(self):
-#         self.assertEqual(self.g.graph_properties["ed_l"],
-#                          self.ed_l)
-    
-#     def test_graphy_property_rewired(self):
-#         self.assertFalse(self.g.graph_properties["rewired"])
-        
-#     def test_graphy_property_self_loops(self):
-#         self.assertFalse(self.g.graph_properties["self_loops"])
-
-#     def test_graphy_property_parallel_edges(self):
-#         self.assertFalse(self.g.graph_properties["parallel_edges"])
-
-        
-#     def test_vertex_property_xy(self):
-#         xy = self.g.vertex_properties["xy"]
-#         for i in [0,self.N-1]:
-#             self.assertEqual(type(xy[self.g.vertex(i)][0]), float)
-#             self.assertEqual(type(xy[self.g.vertex(i)][1]), float)
-#             self.assertGreaterEqual(xy[self.g.vertex(i)][0], 0.)
-#             self.assertGreaterEqual(xy[self.g.vertex(i)][1], 0.)
-#             self.assertLessEqual(xy[self.g.vertex(i)][0], 212.)
-#             self.assertLessEqual(xy[self.g.vertex(i)][1], 212.)
-
-#     # we expect the graph to have no self loops
-#     def test_graph_self_loops(self):
-#         ne_before = self.g.num_edges()
-#         gt.stats.remove_self_loops(self.g)
-#         ne_after = self.g.num_edges()
-#         self.assertEqual(ne_before, ne_after)
-
-#     # we expect the graph to have no parallel edges
-#     def test_graph_parallel_edges(self):
-#         ne_before = self.g.num_edges()
-#         gt.stats.remove_parallel_edges(self.g)
-#         ne_after = self.g.num_edges()
-#         self.assertEqual(ne_before, ne_after)
-
-#     def test_graph_saving(self):
-#         h = gt.load_graph(self.spath)
-#         self.assertTrue(gt.topology.isomorphism(self.g,h))
-#         os.remove(self.spath)
-
-#     def test_expected_connectivity(self):
-#         mu = eval_connectivity(self.g)
-#         # match the expected connectivity mu=0.116 +- 0.01
-#         self.assertLess(0.096, mu)
-#         self.assertGreater(0.126, mu)   
-    
 
 if __name__ == '__main__':
     unittest.main()
