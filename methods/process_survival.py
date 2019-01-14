@@ -112,26 +112,37 @@ def extract_survival(turnover_data, bin_w, N_neuron, t_split,
                     # long surviving synapses
                   
                     # normalize to the times of the first growth event
-                    # gdf['t'] = gdf['t']-gdf['t'].iloc[0]
+                    # +gdf['t'] = gdf['t']-gdf['t'].iloc[0]+
+                    # --> done below by adding to t_split
 
                     # filter out events after window t_split
-                    gdf = gdf[gdf['t'] <= t_split+gdf['t'].iloc[0]]
+                    gdf_cut = gdf[gdf['t'] <= t_split+gdf['t'].iloc[0]]
 
                     # starts with growth and ends on pruning event
-                    if len(gdf) % 2 == 0:
+                    if len(gdf_cut) % 2 == 0:
 
-                        srv_t = np.diff(gdf['t'])
+                        srv_t = np.diff(gdf_cut['t'])
                         assert np.max(srv_t)<=t_split
 
                         full_t.extend(list(srv_t)[::2])
 
                     # ends on growth event, need to find next pruning event
-                    elif len(gdf) % 2 == 1:
-                        raise NotYetImplementedError
+                    elif len(gdf_cut) % 2 == 1:
 
-                    #     if len(c_sort_cut) == len(c_sort):
-                    #         # can't find any, add maximal survival
-                    #         survival_counts += np.ones_like(survival_counts)
+                        if len(gdf_cut) == 1:
+                            
+                            if len(gdf_cut) == len(gdf):
+                                # can't find any, add maximal survival
+                                full_t.append(t_split)
+
+                            else:
+                                print(gdf_cut)
+                                print(gdf)
+                                full_t.append(gdf['t'].iloc[len(gdf_cut)] - \
+                                              gdf_cut['t'].iloc[0])  
+                                
+                                
+                                
                     #     else:
                     #         c_sort_appendix = c_sort[len(c_sort_cut),:]
                     #         # try:
