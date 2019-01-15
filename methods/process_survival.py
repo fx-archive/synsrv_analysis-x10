@@ -136,50 +136,50 @@ def extract_survival(turnover_data, bin_w, N_neuron, t_split,
                                 full_t.append(t_split)
 
                             else:
-                                print(gdf_cut)
-                                print(gdf)
-                                full_t.append(gdf['t'].iloc[len(gdf_cut)] - \
-                                              gdf_cut['t'].iloc[0])  
-                                
-                                
-                                
-                    #     else:
-                    #         c_sort_appendix = c_sort[len(c_sort_cut),:]
-                    #         # try:
-                    #         #     assert c_sort_appendix[0]==0
-                    #         # except AssertionError:
-                    #         #     print("c_sort: ", c_sort)
-                    #         #     print("c_sort_cut: ", c_sort_cut)
-                    #         #     print("c_sort_appendix: ", c_sort_appendix)
-                    #         #     assert False
-                    #         #     assert c_sort_appendix[0]==0
-                    #         #     sys.exit()
+                                dt = gdf['t'].iloc[len(gdf_cut)] - \
+                                     gdf_cut['t'].iloc[0]
 
-                    # #         c_sort_cut = np.vstack((c_sort_cut,
-                    # #                                 c_sort_appendix))
+                                if dt > t_split:
+                                    full_t.append(t_split)
+                                else:
+                                    full_t.append(dt)
 
-                    # #         assert len(c_sort_cut) % 2 ==0
+                        elif len(gdf_cut) > 1:
 
-                    # #         lts = np.diff(c_sort_cut[:,1])
-
-                    # #         for lt in lts:
-                    # #             # look up lt in survival_bins
-                    # #             # and add survival counts
-                    # #             added_counts = np.zeros_like(survival_counts)
-                    # #             added_counts[survival_times/second<lt]=1
-
-                    # #             survival_counts += added_counts
+                            gdf_blk, gdf_end = gdf_cut[:-1], gdf_cut.iloc[-1]
 
 
-# -------------------------------------------------                            
-                                    
-         
+                            assert(gdf_blk['struct'].iloc[0]==1)
+                            assert(gdf_end['struct']==1)
 
+                            srv_t = np.diff(gdf_blk['t'])
+                            assert np.max(srv_t)<=t_split
 
+                            full_t.extend(list(srv_t)[::2])
+
+                            # process the final growth event gdf_cut
+                            
+                            if len(gdf_cut) == len(gdf):
+                                # final growth event within t_split did not
+                                # get pruned until simulation end, add max
+                                full_t.append(t_split)
+
+                            elif len(gdf_cut) < len(gdf):
+
+                                dt = gdf['t'].iloc[len(gdf_cut)] - \
+                                     gdf_end['t']
+
+                                if dt > t_split:
+                                    full_t.append(t_split)
+                                else:
+                                    full_t.append(dt)
+
+          
+       
     b = time.time()
     print('main loop took %.2f seconds' %(b-a))
 
-    # print('Excluded: ', exclude_count)
+    print('Excluded contacts: ', len(excluded_ids))
     
     return full_t, excluded_ids
 
