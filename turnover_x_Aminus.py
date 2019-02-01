@@ -42,10 +42,10 @@ if __name__ == "__main__":
     # sorted to ensure expected order
     build_dirs = sorted(['builds/'+pth for pth in next(os.walk("builds/"))[1]])
 
-    starters, t_cut, fit = 'without', 1000*second, False
+    starters, t_cut, fit = 'without', 5*second, False
     bin_w = 1*second
 
-    insert_P = [0.0000125,0.000015,0.0000175]
+    insert_P = [0.0000165]#,0.000015,0.0000175]
 
     for insP in insert_P:
     
@@ -55,7 +55,7 @@ if __name__ == "__main__":
 
             try:
 
-                # print('Found ', bpath)
+                print('Found ', bpath)
                 # if bpath=='builds/0000':
 
                 #     with open(bpath+'/raw/namespace.p', 'rb') as pfile:

@@ -28,7 +28,7 @@ if __name__ == "__main__":
             with open(bpath+'/raw/namespace.p', 'rb') as pfile:
                 nsp=pickle.load(pfile)
 
-            t_cut = 20*second
+            t_cut = 2*second
             t_split = (nsp['T2']-t_cut)/2.
 
 
@@ -41,18 +41,18 @@ if __name__ == "__main__":
 
             a=time.time()
             print('\n started survival extractation')
-            s_times, s_counts = extract_survival(turnover, bin_w,
-                                                 nsp['N_e'],
-                                                 t_split=t_split,
-                                                 t_cut=t_cut)
+            full_t, ex_ids = extract_survival(turnover,
+                                              nsp['N_e'],
+                                              t_split=t_split,
+                                              t_cut=t_cut)
 
             
             b = time.time()
             print('finished survival extraction, took %.2f seconds' %(b-a))
 
-            with open(bpath+'/raw/survival.p', 'wb') as pfile:
+            with open(bpath+'/raw/survival_full_t.p', 'wb') as pfile:
                 out = {'t_split': t_split, 't_cut': t_cut,
-                       's_times': s_times, 's_counts': s_counts}
+                       'full_t': full_t, 'excluded_ids': ex_ids}
                 pickle.dump(out, pfile)
                     
 

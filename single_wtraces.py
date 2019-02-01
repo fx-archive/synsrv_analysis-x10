@@ -34,7 +34,7 @@ def single_wtraces(bpath, nsp):
 
 
     # for i in range(np.shape(synee_stat['a'])[1]):
-    indx = np.logical_and(synee_stat['t'] > tmin3,
+    indx = np.logical_and(synee_stat['t'] > 12*second,
                           synee_stat['t'] < tmax3)
 
     directory = "figures/single_wtraces/" +bpath[-4:]
@@ -48,6 +48,9 @@ def single_wtraces(bpath, nsp):
         fig, ax = pl.subplots()
 
         ax.plot(synee_stat['t'][indx],synee_stat['a'][:,i][indx], color='grey')
+
+        inac_t = synee_stat['t'][indx][synee_stat['syn_active'][:,i][indx]==0]
+        ax.plot(inac_t, np.zeros_like(inac_t), '.', color='red')
 
         # ax.text(0.47, 0.95,
         # 'ascale='+'%.2E' % Decimal(tr.ascale),

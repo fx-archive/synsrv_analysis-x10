@@ -39,41 +39,41 @@ def synw_figure(bpath, nsp):
 
     synapse_weights_linear(axs['1,1'], bpath, nsp, tstep=0, bins=50,
                            cutoff=0.)
-    synapse_weights_linear(axs['2,1'], bpath, nsp, tstep=3, bins=50,
+    synapse_weights_linear(axs['2,1'], bpath, nsp, tstep=2, bins=50,
                            cutoff=0.)
-    synapse_weights_linear(axs['3,1'], bpath, nsp, tstep=6, bins=50,
+    synapse_weights_linear(axs['3,1'], bpath, nsp, tstep=4, bins=50,
                            cutoff=0.)
-    synapse_weights_linear(axs['4,1'], bpath, nsp, tstep=10, bins=50,
+    synapse_weights_linear(axs['4,1'], bpath, nsp, tstep=6, bins=50,
                            cutoff=0.)
-    synapse_weights_linear(axs['5,1'], bpath, nsp, tstep=15, bins=50,
+    synapse_weights_linear(axs['5,1'], bpath, nsp, tstep=8, bins=50,
                            cutoff=0.)
-    synapse_weights_linear(axs['6,1'], bpath, nsp, tstep=19, bins=50,
+    synapse_weights_linear(axs['6,1'], bpath, nsp, tstep=10, bins=50,
                            cutoff=0.)
     
     synapse_weights_linear(axs['1,2'], bpath, nsp, tstep=0, bins=50,
                            cutoff=10.**(-20))
-    synapse_weights_linear(axs['2,2'], bpath, nsp, tstep=3, bins=50,
+    synapse_weights_linear(axs['2,2'], bpath, nsp, tstep=2, bins=50,
                            cutoff=10**(-20))
-    synapse_weights_linear(axs['3,2'], bpath, nsp, tstep=6, bins=50,
+    synapse_weights_linear(axs['3,2'], bpath, nsp, tstep=4, bins=50,
                            cutoff=10.**(-20))
-    synapse_weights_linear(axs['4,2'], bpath, nsp, tstep=10, bins=50,
+    synapse_weights_linear(axs['4,2'], bpath, nsp, tstep=6, bins=50,
                            cutoff=10.**(-20))
-    synapse_weights_linear(axs['5,2'], bpath, nsp, tstep=15, bins=50,
+    synapse_weights_linear(axs['5,2'], bpath, nsp, tstep=8, bins=50,
                            cutoff=10.**(-20))
-    synapse_weights_linear(axs['6,2'], bpath, nsp, tstep=19, bins=50,
+    synapse_weights_linear(axs['6,2'], bpath, nsp, tstep=10, bins=50,
                            cutoff=0.0001)
 
     synapse_weights_linear(axs['1,3'], bpath, nsp, tstep=0, bins=50,
                            cutoff=10**(-10))
-    synapse_weights_linear(axs['2,3'], bpath, nsp, tstep=3, bins=50,
+    synapse_weights_linear(axs['2,3'], bpath, nsp, tstep=2, bins=50,
                            cutoff=10**(-10))
-    synapse_weights_linear(axs['3,3'], bpath, nsp, tstep=6, bins=50,
+    synapse_weights_linear(axs['3,3'], bpath, nsp, tstep=4, bins=50,
                            cutoff=10**(-10))
-    synapse_weights_linear(axs['4,3'], bpath, nsp, tstep=10, bins=50,
+    synapse_weights_linear(axs['4,3'], bpath, nsp, tstep=6, bins=50,
                            cutoff=10**(-10))
-    synapse_weights_linear(axs['5,3'], bpath, nsp, tstep=15, bins=50,
+    synapse_weights_linear(axs['5,3'], bpath, nsp, tstep=8, bins=50,
                            cutoff=10**(-10))
-    synapse_weights_linear(axs['6,3'], bpath, nsp, tstep=19, bins=50,
+    synapse_weights_linear(axs['6,3'], bpath, nsp, tstep=10, bins=50,
                            cutoff=10**(-10))
         
 

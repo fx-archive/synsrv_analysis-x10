@@ -4,7 +4,7 @@ import sys, time
 import numpy as np
 import pandas as pd
 
-def extract_survival(turnover_data, bin_w, N_neuron, t_split,
+def extract_survival(turnover_data, N_neuron, t_split,
                       t_cut = 0.*second):
     '''
     turnover data is assumed to be a numpy.array with 
@@ -46,11 +46,7 @@ def extract_survival(turnover_data, bin_w, N_neuron, t_split,
     #        [  1.,   0.,  20., 318.]])
     #
 
-    t_split, t_cut, bin_w = t_split/second, t_cut/second, bin_w/second
-    
-    survival_times = np.arange(0, t_split+bin_w, bin_w)
-    survival_times = survival_times*second
-
+    t_split, t_cut = t_split/second, t_cut/second
     full_t = []
 
     a = time.time()
@@ -184,3 +180,13 @@ def extract_survival(turnover_data, bin_w, N_neuron, t_split,
     return full_t, excluded_ids
 
 
+
+
+def convert_full_t_to_srv_prb(full_t, t_max, bin_w):
+
+    bins = np.arange(bin_w, t_max+bin_w, bin_w)
+
+    counts, edges = np.histogram(full, bins=bins, density=False)
+
+    np.cumsum(counts[::-1])[::-1]
+    

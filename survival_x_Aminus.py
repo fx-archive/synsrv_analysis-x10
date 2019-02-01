@@ -44,7 +44,7 @@ if __name__ == "__main__":
 
     bin_w = 1*second
     fit = False
-    Tmax = 1000
+    Tmax = 2000
     NPInp = 1000
 
     # insert_P = [0.0000125,0.000015,0.0000175]
