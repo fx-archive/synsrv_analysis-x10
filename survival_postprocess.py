@@ -28,7 +28,7 @@ if __name__ == "__main__":
             with open(bpath+'/raw/namespace.p', 'rb') as pfile:
                 nsp=pickle.load(pfile)
 
-            t_cut = 2*second
+            t_cut = 100*second
             t_split = (nsp['T2']-t_cut)/2.
 
 
@@ -59,6 +59,5 @@ if __name__ == "__main__":
 
         except FileNotFoundError:
             print(bpath[-4:], "reports: No namespace data. Skipping.")
-
 
 

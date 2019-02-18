@@ -3,14 +3,20 @@
 rm -rf analysis/
 #mkdir analysis
 
-cp -r ../../../analysis .
+cp -r ../../analysis .
 # cp -r ../../analysis .
 
 
 #python -m analysis.turnover_x_Aminus
 # nohup srun -p x-men -c 4 --mem 62GB python -m analysis.turnover_x_Aminus > turn_analysis.out &
 
-nohup srun -p sleuths -c 4 --mem 10GB python -m analysis.survival_postprocess > surv_pp.out &
+# nohup srun -p x-men -c 4 --mem 16GB python -m analysis.survival_postprocess > surv_pp.out &
+# nohup srun -p x-men -c 4 --mem 16GB python -m analysis.lifetimes_postprocess > lts_pp.out &
+
+# python -m analysis.lifetimes_postprocess 
+
+
+# nohup python -m analysis.lifetimes_postprocess > lts_pp.out &
 
 
 #python -m analysis.survival_pp_x_Aminus
@@ -22,7 +28,7 @@ nohup srun -p sleuths -c 4 --mem 10GB python -m analysis.survival_postprocess > 
 #python -m analysis.single_wtraces
 
 
-#python -m analysis.overview_fb
+python -m analysis.overview_fb
 
 # #srun -p x-men --mem 32GB python analysis/synapse_dynamics_fb.py
 # python analysis/synapse_dynamics_fb.py

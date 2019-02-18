@@ -60,7 +60,7 @@ def extract_survival(turnover_data, N_neuron, t_split,
 
     df = df.astype({'struct': 'int64', 'i': 'int64', 'j': 'int64'})
 
-    df['s_id'] = df['i'] * 1000 + df['j']
+    df['s_id'] = df['i'] * N_neuron + df['j']
 
     df = df.sort_values(['s_id', 't'])
 
@@ -84,7 +84,11 @@ def extract_survival(turnover_data, N_neuron, t_split,
 
         elif len(gdf) > 1:
 
-            # we need to test that...
+            # we need to test that [0,1,0,1,0,1,0,...]
+            # however in very rare cases it can happen that
+            # [0,1,0,0,1,1,0,..]
+            # we excluded these cases and count how often
+            # they appear
             tar = np.abs(np.diff(gdf['struct']))
 
             if np.sum(tar)!=len(tar):
