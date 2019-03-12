@@ -49,7 +49,7 @@ def netw_params_display(ax, bpath, nsp):
     text = '$T_1 = '+r'\text{\SI{'+'%d}{s}' %(int(nsp['T1']/second))+'}$, '+\
            '$T_2 = '+r'\text{\SI{'+'%d}{s}' %(int(nsp['T2']/second))+'}$, '+\
            '$T_3 = '+r'\text{\SI{'+'%d}{s}' %(int(nsp['T3']/second))+'}$' +\
-           '\n$dt='+r'\text{'+'\SI{%.2f}{ms}' %(int(nsp['dt']/ms)) +'}$'
+           '\n$dt='+r'\text{'+'\SI{%.2f}{ms}' %(nsp['dt']/ms) +'}$'
 
 
     ax.text(0., 0.215, text,
@@ -78,7 +78,6 @@ def neuron_params_display(ax, bpath, nsp):
             bbox={'boxstyle': 'square, pad=0.3', 'facecolor':'white',
                   'alpha':1, 'edgecolor':'none'},
             transform = ax.transAxes)
-
 
     
     text = '$'+r'\tau'+'$=\SI{%.0f}{ms}' %(nsp['tau']/ms) +\
@@ -259,6 +258,7 @@ def strct_params_display(ax, bpath, nsp):
 
     text = '$p_{\mathrm{insert}} = %f$' %(nsp['insert_P']) +\
            '\n$a_{\mathrm{insert}} = %f$' %(nsp['a_insert']) +\
+           '\n$c = %f$' %(nsp['strct_c']) +\
            '\n$p_{\mathrm{inactivate}} = %f$' %(nsp['p_inactivate']) +\
            '\n $a_{\mathrm{thrshld}} = %f$' %(nsp['prn_thrshld']) +\
            '\n $\Delta_{\mathrm{strct}} =\,$ \SI{%.2f}{ms}' %(nsp['strct_dt']/ms)
@@ -278,37 +278,71 @@ def poisson_input_params_display(ax, bpath, nsp):
     
     ax.axis('off')
 
-    text = r'\textbf{Poisson input parameters}'
+    if nsp['external_mode']=='poisson':
 
-    ax.text(0., 1.0, text,
-            horizontalalignment='left',
-            verticalalignment='top',
-            linespacing = 1.95,
-            fontsize=13,
-            bbox={'boxstyle': 'square, pad=0.3', 'facecolor':'white',
-                  'alpha':1, 'edgecolor':'none'},
-            transform = ax.transAxes)
+        text = r'\textbf{Poisson input parameters}'
+
+        ax.text(0., 1.0, text,
+                horizontalalignment='left',
+                verticalalignment='top',
+                linespacing = 1.95,
+                fontsize=13,
+                bbox={'boxstyle': 'square, pad=0.3', 'facecolor':'white',
+                      'alpha':1, 'edgecolor':'none'},
+                transform = ax.transAxes)
 
 
-    text = '$N_{\mathrm{poisson}} = %d$' %(int(nsp['NPInp'])) +\
-           '\n'+r'$\mathrm{rate} = \text{\SI{'+'%.3f}{Hz}}$' \
-              %(nsp['PInp_rate']/Hz) +\
-           '\n' +'$N_{\mathrm{poisson}} = %d$' %(int(nsp['NPInp_inh'])) +\
-           '\n'+r'$\mathrm{rate} = \text{\SI{'+'%.3f}{Hz}}$' \
-              %(nsp['PInp_inh_rate']/Hz) 
-              
-           # '\n$a_{\mathrm{epoi} = %f$' %(nsp['a_EPoi']) +\
-           # '\n$a_{\mathrm{ipoi} = %f$' %(nsp['a_IPoi']) +\
-           # '\n$p_{\mathrm{epoi} = %f$' %(nsp['p_EPoi']) +\
-           # '\n$p_{\mathrm{ipoi} = %f$' %(nsp['p_IPoi'])
+        text = '$N_{\mathrm{poisson}} = %d$' %(int(nsp['NPInp'])) +\
+               '\n'+r'$\mathrm{rate} = \text{\SI{'+'%.3f}{Hz}}$' \
+                  %(nsp['PInp_rate']/Hz) +\
+               '\n' +'$N_{\mathrm{poisson}} = %d$' %(int(nsp['NPInp_inh'])) +\
+               '\n'+r'$\mathrm{rate} = \text{\SI{'+'%.3f}{Hz}}$' \
+                  %(nsp['PInp_inh_rate']/Hz) 
 
-    
-    ax.text(0., 0.85, text,
-            horizontalalignment='left',
-            verticalalignment='top',
-            linespacing = 1.95,
-            fontsize=12,
-            bbox={'boxstyle': 'square, pad=0.3', 'facecolor':'white',
-                  'alpha':1, 'edgecolor':'none'},
-            transform = ax.transAxes)
-        
+               # '\n$a_{\mathrm{epoi} = %f$' %(nsp['a_EPoi']) +\
+               # '\n$a_{\mathrm{ipoi} = %f$' %(nsp['a_IPoi']) +\
+               # '\n$p_{\mathrm{epoi} = %f$' %(nsp['p_EPoi']) +\
+               # '\n$p_{\mathrm{ipoi} = %f$' %(nsp['p_IPoi'])
+
+
+        ax.text(0., 0.85, text,
+                horizontalalignment='left',
+                verticalalignment='top',
+                linespacing = 1.95,
+                fontsize=12,
+                bbox={'boxstyle': 'square, pad=0.3', 'facecolor':'white',
+                      'alpha':1, 'edgecolor':'none'},
+                transform = ax.transAxes)
+
+    elif nsp['external_mode']=='memnoise':
+
+
+        text = r'\textbf{Membrane noise parameters}'
+
+        ax.text(0., 1.0, text,
+                horizontalalignment='left',
+                verticalalignment='top',
+                linespacing = 1.95,
+                fontsize=13,
+                bbox={'boxstyle': 'square, pad=0.3', 'facecolor':'white',
+                      'alpha':1, 'edgecolor':'none'},
+                transform = ax.transAxes)
+
+
+        text = '$\mu_{\mathrm{e}} =' + r'\text{\SI{' + \
+               '%.2f}{mV}}$, ' %(nsp['mu_e']/mV) + \
+               '$\mu_{\mathrm{i}} =' + r'\text{\SI{' + \
+               '%.2f}{mV}}$, ' %(nsp['mu_i']/mV) + \
+               '\n' + '$\sigma_{\mathrm{e}} =' + r'\text{\SI{' + \
+               '%.2f}{mV}}$, ' %(nsp['sigma_e']/mV) + \
+               '$\sigma_{\mathrm{i}} =' + r'\text{\SI{' + \
+               '%.2f}{mV}}$, ' %(nsp['sigma_i']/mV) 
+               
+        ax.text(0., 0.85, text,
+                horizontalalignment='left',
+                verticalalignment='top',
+                linespacing = 1.95,
+                fontsize=12,
+                bbox={'boxstyle': 'square, pad=0.3', 'facecolor':'white',
+                      'alpha':1, 'edgecolor':'none'},
+                transform = ax.transAxes)

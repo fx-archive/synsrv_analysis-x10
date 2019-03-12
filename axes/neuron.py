@@ -83,11 +83,12 @@ def ge_plot(ax, bpath, nsp, tmin, tmax, i=0):
 
     try:
         ge_data=GExc_stat['ge']
+        V_data = GExc_stat['V']
 
         indx = np.logical_and(GExc_stat['t']>tmin, GExc_stat['t']<tmax)
 
         # for i in range(np.shape(ge_data)[1]):
-        ax.plot(GExc_stat['t'][indx]/second, ge_data[:,i][indx], color='blue')
+        ax.plot(GExc_stat['t'][indx]/second, (nsp['Ee']/mV-V_data[:,i][indx]/mV)*ge_data[:,i][indx], color='blue')
 
         #ax.set_xlim(tmin/second, tmax/second)
         ax.set_xlabel('time [s]')
@@ -111,13 +112,14 @@ def gi_plot(ax, bpath, nsp, tmin, tmax, i=0):
 
     try:
         gi_data=GExc_stat['gi']
+        V_data=GExc_stat['V']
 
         indx = np.logical_and(GExc_stat['t']>tmin, GExc_stat['t']<tmax)
 
         # for i in range(np.shape(gi_data)[1]):
         #     ax.plot(GExc_stat['t'][indx]/second, gi_data[:,i][indx])
 
-        ax.plot(GExc_stat['t'][indx]/second, gi_data[:,i][indx], color='red')
+        ax.plot(GExc_stat['t'][indx]/second, (nsp['Ei']/mV-V_data[:,i][indx]/mV)*gi_data[:,i][indx], color='red')
 
         #ax.set_xlim(tmin/second, tmax/second)
         ax.set_xlabel('time [s]')
